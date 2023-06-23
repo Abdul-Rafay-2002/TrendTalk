@@ -7,8 +7,6 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useAuth } from '@/context/authContext';
 import { useRouter } from 'next/router';
 
-
-
 const Login = () => {
     const router = useRouter();
     const { currentUser, isLoading } = useAuth();
@@ -25,7 +23,11 @@ const Login = () => {
         e.preventDefault();
         const email = e.target[0].value;
         const password = e.target[1].value;
-
+        if (!email || !password) {
+            // Display error message: "Email and password are required."
+            alert("Email and password are required.");
+            return;
+        }
         try {
             await signInWithEmailAndPassword(auth, email, password)
         } catch (error) {
@@ -78,7 +80,7 @@ const Login = () => {
                             autoComplete='off'
                         />
                         <div className='text-right w-full my-2'>
-                            <span className='text-greyish-200 text-sm cursor-pointer font-Lexend font-medium'>
+                            <span className='text-greyish-200  cursor-pointer lexend'>
                                 Forget Password?
                             </span>
                         </div>

@@ -1,0 +1,8 @@
+Trendtalk Dependencies: 
+react-icons 
+react-click-away-listener 
+react-moment
+react-toastify
+react-simple-image-viewer
+uuid
+emoji-picker-react

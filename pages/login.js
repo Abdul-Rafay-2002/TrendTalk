@@ -75,7 +75,7 @@ const Login = () => {
         <div className='w-full h-full animated-bg'>
             <ToastMessage />
             <div className='h-[100vh] flex justify-center items-center'>
-                <div className='flex items-center flex-col glass-effect p-6 mx-3'>
+                <div className='flex items-center flex-col glass-effect p-6 m-3'>
                     <div className='text-center'>
                         <h1 className='text-greyish-100'>Login to Your Account</h1>
                         <p className='text-greyish-200'>

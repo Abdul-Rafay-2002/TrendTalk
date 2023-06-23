@@ -3,13 +3,17 @@ import { FcGoogle } from 'react-icons/fc';
 import { FaFacebookF } from 'react-icons/fa';
 import Link from 'next/link';
 import { auth } from '@/firebase/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, FacebookAuthProvider } from 'firebase/auth';
 import { useAuth } from '@/context/authContext';
 import { useRouter } from 'next/router';
+import ToastMessage from '@/components/ToastMessage';
+import { toast } from 'react-toastify';
 
 const Login = () => {
     const router = useRouter();
     const { currentUser, isLoading } = useAuth();
+    const GoogleProvider = new GoogleAuthProvider();
+    const FacebookProvider = new FacebookAuthProvider();
 
     useEffect(() => {
         if (!isLoading && currentUser) {
@@ -35,8 +39,41 @@ const Login = () => {
         }
     }
 
+    const signInWithGoogle = async () => {
+        try {
+            await signInWithPopup(auth, GoogleProvider)
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    const signInWithFacebook = async () => {
+        try {
+            await signInWithPopup(auth, FacebookProvider)
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const forgetPassword = async () => {
+        try {
+            toast.promise(async () => {
+                //reset login
+            }, {
+                pending: 'Generating reset link ⌚',
+                success: 'Reset email send to your registered email 💌',
+                error: 'You may have entered wrong id ❌'
+            },
+                {
+                    autoClose: 5000
+                }
+            )
+        } catch (error) {
+            console.error(error);
+        }
+    }
     return isLoading || (!isLoading && currentUser) ? 'loading.....' : (
         <div className='w-full h-full animated-bg'>
+            <ToastMessage />
             <div className='h-[100vh] flex justify-center items-center'>
                 <div className='flex items-center flex-col glass-effect p-6 mx-3'>
                     <div className='text-center'>
@@ -46,13 +83,13 @@ const Login = () => {
                         </p>
                     </div>
                     <div className='flex items-center flex-col sm:flex-row gap-2 w-full mt-8 mb-5'>
-                        <div className='bg-gradient-to-r from-limegreen-200 to-limegreen-400 w-full md:w-1/2 h-14 rounded-md cursor-pointer p-[2px] hover:from-limegreen-400 hover:to-limegreen-200'>
+                        <div onClick={signInWithGoogle} className='bg-gradient-to-r from-limegreen-200 to-limegreen-400 w-full md:w-1/2 h-14 rounded-md cursor-pointer p-[2px] hover:from-limegreen-400 hover:to-limegreen-200'>
                             <div className='flex items-center justify-center gap-3 text-greyish-100 font-semibold bg-limegreen-500 w-full h-full rounded-md'>
                                 <FcGoogle />
                                 <span>Login with Google</span>
                             </div>
                         </div>
-                        <div className='bg-gradient-to-r from-limegreen-200 to-limegreen-400 w-full md:w-1/2 h-14 rounded-md cursor-pointer p-[2px] hover:from-limegreen-400 hover:to-limegreen-200'>
+                        <div onClick={signInWithFacebook} className='bg-gradient-to-r from-limegreen-200 to-limegreen-400 w-full md:w-1/2 h-14 rounded-md cursor-pointer p-[2px] hover:from-limegreen-400 hover:to-limegreen-200'>
                             <div className='flex items-center justify-center gap-3 text-greyish-100 font-semibold bg-limegreen-500 w-full h-full rounded-md'>
                                 <FaFacebookF color='#4267B2' />
                                 <span>Login with Facebook</span>
@@ -79,7 +116,7 @@ const Login = () => {
                             className='w-full h-12 rounded-md outline-none boder-none bg-greyish-400 px-4 text-greyish-100 text-md'
                             autoComplete='off'
                         />
-                        <div className='text-right w-full my-2'>
+                        <div onClick={forgetPassword} className='text-right w-full my-2'>
                             <span className='text-greyish-200  cursor-pointer lexend'>
                                 Forget Password?
                             </span>

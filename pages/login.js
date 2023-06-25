@@ -16,12 +16,13 @@ import ToastMessage from '@/components/ToastMessage';
 import { toast } from 'react-toastify';
 
 const Login = () => {
-	const [email, setEmail] = useState('');
-	const router = useRouter();
-	const { currentUser, isLoading } = useAuth();
-	const GoogleProvider = new GoogleAuthProvider();
-	const FacebookProvider = new FacebookAuthProvider();
+	const [email, setEmail] = useState('');  // set the current user email
+	const router = useRouter(); //Router to dynamic routing
+	const { currentUser, isLoading } = useAuth();  // from context
+	const GoogleProvider = new GoogleAuthProvider(); // from FB
+	const FacebookProvider = new FacebookAuthProvider(); // from FB
 
+	// Check if current user is login then removed loader and redirect to the homepage.
 	useEffect(() => {
 		if (!isLoading && currentUser) {
 			// it means user login
@@ -29,6 +30,7 @@ const Login = () => {
 		}
 	}, [currentUser, isLoading]);
 
+	// Login form handler to get all the currentUser data and send into FB with signInwithEmailAndPasssword method
 	const submitHandler = async (e) => {
 		e.preventDefault();
 		const email = e.target[0].value;
@@ -45,6 +47,7 @@ const Login = () => {
 		}
 	};
 
+	//Sign in with google method from FB
 	const signInWithGoogle = async () => {
 		try {
 			await signInWithPopup(auth, GoogleProvider);
@@ -52,6 +55,8 @@ const Login = () => {
 			console.error(error);
 		}
 	};
+
+	//Sign in with facebook method from FB
 	const signInWithFacebook = async () => {
 		try {
 			await signInWithPopup(auth, FacebookProvider);
@@ -60,6 +65,7 @@ const Login = () => {
 		}
 	};
 
+	//Reset Password functionality and send it to current userEmail and show a toastify popups
 	const forgetPassword = async () => {
 		try {
 			toast.promise(
@@ -80,6 +86,8 @@ const Login = () => {
 			console.error(error);
 		}
 	};
+
+// Check if the currentUser is login then not show else show 
 	return isLoading || (!isLoading && currentUser) ? (
 		'loading.....'
 	) : (

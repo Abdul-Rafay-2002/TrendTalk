@@ -15,9 +15,9 @@ const Home = () => {
 
   return (
     <div>
-      <button onClick={signOut}>
+      {/* <button onClick={signOut}>
         Sign Out
-      </button>
+      </button> */}
     </div>
   )
 }

@@ -1,10 +1,12 @@
 import { React, useEffect } from 'react';
 import { useAuth } from '@/context/authContext';
 import { useRouter } from 'next/router';
+import Loader from '@/components/Loader';
+import LeftNav from '@/components/LeftNav';
 
 const Home = () => {
   const router = useRouter();
-  const { signOut, currentUser, isLoading } = useAuth();
+  const { currentUser, isLoading } = useAuth();
   useEffect(() => {
     if (!isLoading && !currentUser) {
       // it means user login 
@@ -13,11 +15,20 @@ const Home = () => {
 
   }, [currentUser, isLoading]);
 
-  return (
-    <div>
-      {/* <button onClick={signOut}>
-        Sign Out
-      </button> */}
+  return !currentUser ? (
+    <Loader />
+  ) : (
+    <div className='bg-Gray-800 h-[100vh]'>
+      <div className='flex w-full h-full shrink-0 '>
+        {/* left menu  */}
+        <LeftNav />
+        {/* Chats main column */}
+        <div className='flex bg-Gray-950 grow'>
+          {/* sidebar */}
+          <div>Sidebar Section</div>
+          <div>Chat Section</div>
+        </div>
+      </div>
     </div>
   )
 }

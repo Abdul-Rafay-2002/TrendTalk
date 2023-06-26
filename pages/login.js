@@ -14,6 +14,7 @@ import { useAuth } from '@/context/authContext';
 import { useRouter } from 'next/router';
 import ToastMessage from '@/components/ToastMessage';
 import { toast } from 'react-toastify';
+import Loader from '@/components/Loader';
 
 const Login = () => {
 	const [email, setEmail] = useState('');  // set the current user email
@@ -89,7 +90,7 @@ const Login = () => {
 
 // Check if the currentUser is login then not show else show 
 	return isLoading || (!isLoading && currentUser) ? (
-		'loading.....'
+		<Loader/>
 	) : (
 		<div className='w-full h-full animated-bg'>
 			<ToastMessage />

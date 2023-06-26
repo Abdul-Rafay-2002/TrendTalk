@@ -14,6 +14,7 @@ import { useAuth } from '@/context/authContext';
 import { useRouter } from 'next/router';
 import { doc, setDoc } from 'firebase/firestore';
 import { profileColors } from '@/utils/constants';
+import Loader from '@/components/Loader';
 
 const GoogleProvider = new GoogleAuthProvider(); // from FB
 const FacebookProvider = new FacebookAuthProvider(); // from FB
@@ -91,7 +92,7 @@ const Register = () => {
 
 	// Check if the currentUser is login then not show else show
 	return isLoading || (!isLoading && currentUser) ? (
-		'loading.....'
+		<Loader />
 	) : (
 		<div className='w-full h-full animated-bg'>
 			<div className='h-[100vh] flex justify-center items-center'>

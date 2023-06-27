@@ -12,7 +12,7 @@ const Icons = ({ size, icon, onClick, className }) => {
 			: 'w-12 h-12';
 	return (
 		<div
-			className={`${c} rounded-full flex items-center justify-center hover:bg-Gray-500 cursor-pointer ${className}`}
+			className={`${c} rounded-full flex items-center justify-center cursor-pointer ${className}`}
 			onClick={onClick}>
 			{icon && icon}
 		</div>

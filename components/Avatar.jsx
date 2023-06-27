@@ -45,7 +45,7 @@ const Avatar = ({ size, user, onClick }) => {
       {user?.photoURL ? (
         <div>
           <Image
-            className={`${c} overflow-hidden rounded-full`}
+            className={`${c} overflow-hidden rounded-full object-cover`}
             src={user?.photoURL}
             alt='User Profile'
             width={s}

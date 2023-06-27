@@ -8,11 +8,18 @@ import { AiOutlineClose } from 'react-icons/ai';
 import { MdAddAPhoto, MdDelete, MdPhotoCamera } from 'react-icons/md';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
 import { profileColors } from '@/utils/constants';
+import { toast } from 'react-toastify';
+import ToastMessage from '@/components/ToastMessage';
+import { doc, updateDoc } from 'firebase/firestore';
+import { updateProfile } from 'firebase/auth';
+import { db, auth, storage, } from '@/firebase/firebase';
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const LeftNav = () => {
-	const { signOut, currentUser } = useAuth();
+	const { signOut, currentUser, setCurrentUser } = useAuth();
 	const [editProfile, setEditProfile] = useState(true);
 	const [nameEdited, setNameEdited] = useState(false);
+	const authUser = auth.currentUser;
 
 	//OnkeyUp Method Which allow to check with condition that if the currentUser Name will edit and else is not editied.
 	const onkeyup = (e) => {
@@ -31,10 +38,116 @@ const LeftNav = () => {
 			e.preventDefault();
 		}
 	};
+	//Uploading image to firstore with the local directory of users
+	const uploadingImageToFirestore = (file) =>{
+		try {
+			if(file){
+				// if file has uploading then this logic from FB
+				const storageRef = ref(storage, currentUser.displayName);
+				const uploadTask = uploadBytesResumable(storageRef, file);
+				uploadTask.on('state_changed',
+					(snapshot) => {
+						const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+						console.log('Upload is ' + progress + '% done');
+						switch (snapshot.state) {
+							case 'paused':
+								console.log('Upload is paused');
+								break;
+							case 'running':
+								console.log('Upload is running');
+								break;
+						}
+					},
+					(error) => {
+						// Handle unsuccessful uploads
+						console.error(error);
+					},
+					() => {
+						getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+							console.log('File available at', downloadURL);
+							updateProfileHandler("photo", downloadURL);
+							await updateProfile(authUser, {
+								photoURL: downloadURL,
+							});
+						});
+					}
+					);
+				}
+			} catch (error) {
+			console.error(error);
+		}
+	}
+
+	//Update Profile methods with one handler
+	const updateProfileHandler = (type, value) => {
+		let obj = { ...currentUser };
+		switch (type) {
+			//Changing the bgColors with grid profile colors
+			case 'color':
+				obj.color = value;
+				break;
+
+			//Edit the name of profile
+			case 'name':
+				obj.displayName = value;
+				break;
+
+			//uploade the custom photo in profile
+			case 'photo':
+				obj.photoURL = value;
+				break;
+
+			//Remove the custom profile photo
+			case 'photo-remove':
+				obj.photoURL = null;
+				break;
+
+			default:
+				break;
+		}
+		try {
+			toast.promise(
+				async () => {
+					const userDocRef = doc(db, 'users', currentUser.uid);
+					await updateDoc(userDocRef, obj);
+					setCurrentUser(obj);
+
+					if (type === 'photo-remove') {
+						await updateProfile(authUser, {
+							photoURL: null,
+						});
+					}
+					if (type === 'name') {
+						await updateProfile(authUser, {
+							displayName: value,
+						});
+						setNameEdited(false);
+					}
+					// if (type === "name"){
+					// 	await updatePassword(authUser, {
+					// 		displayName: value,
+
+					// 	})
+					// }
+				},
+				{
+					pending: 'Updating Profile',
+					success: `Profile Updated Successfully`,
+					error: 'Profile Updated failed',
+				},
+				{
+					autoClose: 3000,
+				}
+			);
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
 	const editProfileContainer = () => {
 		return (
 			<div className='relative flex flex-col items-center'>
+				<ToastMessage />
 				<Icons
 					size='small'
 					className='absolute top-0 right-2 p-2 transition-all hover:bg-Gray-700/50'
@@ -54,7 +167,7 @@ const LeftNav = () => {
 						<input
 							type='file'
 							id='fileUpload'
-							onChange={(e) => { }}
+							onChange={(e) => uploadingImageToFirestore(e.target.files[0])}
 							style={{ display: 'none' }}
 						/>
 					</div>
@@ -70,11 +183,16 @@ const LeftNav = () => {
 						{nameEdited && (
 							<BsFillCheckCircleFill
 								className='text-limegreen-300 cursor-pointer'
-								onClick={() => { }}
+								onClick={() => {
+									updateProfileHandler(
+										'name',
+										document.getElementById('diplayNameEditable').innerText
+									);
+								}}
 							/>
 						)}
 						<h4
-							contentEditable="true" 
+							contentEditable='true'
 							className='text-greyish-100 outline-none border-none whitespace-nowrap overflow-hidden text-ellipsis pl-3'
 							id='diplayNameEditable'
 							onKeyUp={onkeyup}
@@ -89,8 +207,16 @@ const LeftNav = () => {
 						<span
 							key={index}
 							className='w-8 h-8 border-2 border-greyish-500 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-125'
-							style={{ backgroundColor: color, boxShadow: `0 0 10px 0px ${color}` }}>
-							{color === currentUser.color && <BiCheck size={20} color='#fff' />}
+							style={{
+								backgroundColor: color,
+								boxShadow: `0 0 10px 0px ${color}`,
+							}}
+							onClick={() => {
+								updateProfileHandler('color', color);
+							}}>
+							{color === currentUser.color && (
+								<BiCheck size={20} color='#fff' />
+							)}
 						</span>
 					))}
 				</div>
@@ -100,8 +226,9 @@ const LeftNav = () => {
 
 	return (
 		<div
-			className={`${editProfile ? 'w-[300px]' : 'w-[80px] items-center'
-				} h-[100vh] flex flex-col justify-between py-4 shrink-0 transition-all`}>
+			className={`${
+				editProfile ? 'w-[300px]' : 'w-[80px] items-center'
+			} h-[100vh] flex flex-col justify-between py-4 shrink-0 transition-all`}>
 			{/* Top Header */}
 			{/* <div className='w-full text-center'>
                 <Image src="/logo.png" width={80} height={80} alt='logo' />
@@ -122,13 +249,14 @@ const LeftNav = () => {
 			)}
 			{/* Bottom icons */}
 			<div
-				className={`flex gap-5 justify-center  ${editProfile ? '' : 'flex-col items-center'
-					}`}>
+				className={`flex gap-5 justify-center  ${
+					editProfile ? '' : 'flex-col items-center'
+				}`}>
 				<Icons
 					size='large'
 					className={`bg-greyish-600 hover:bg-Sky-500`}
 					icon={<FaPlus size={20} color='#fff' />}
-					onClick={() => { }}
+					onClick={() => {}}
 				/>
 				<Icons
 					size='large'

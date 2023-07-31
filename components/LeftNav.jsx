@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import { BiCheck, BiEditAlt, BiLogOut } from 'react-icons/bi';
+import { BiCheck, BiSolidEdit, BiLogOut } from 'react-icons/bi';
 import Avatar from './Avatar';
 import { useAuth } from '@/context/authContext';
 import Icons from './Icons';
@@ -172,17 +172,19 @@ const LeftNav = () => {
 						/>
 					</div>
 					{currentUser.photoURL && (
-						<div className='w-6 h-6 rounded-full bg-Red-200 flex justify-center items-center absolute right-0 bottom-0 '>
-							<MdDelete size={18} color='#fff' />
+						<div className='w-6 h-6 rounded-full bg-Red-100 border-[5px] border-Gray-800 flex justify-center items-center absolute right-1 bottom-1'
+							onClick={() => { updateProfileHandler("photo-remove")}}
+						>
+							<MdDelete size={12} color='#fff' />
 						</div>
 					)}
 				</div>
 				<div className='text-center mt-4'>
-					<div className='flex items-center justify-start w-[211px]'>
-						{!nameEdited && <BiEditAlt className='text-Sky-50' />}
+					<div className='flex items-center justify-center w-[300px]'>
+						{!nameEdited && <BiSolidEdit className='text-Sky-50' />}
 						{nameEdited && (
 							<BsFillCheckCircleFill
-								className='text-limegreen-300 cursor-pointer'
+								className='text-Sky-600 cursor-pointer'
 								onClick={() => {
 									updateProfileHandler(
 										'name',
@@ -193,7 +195,7 @@ const LeftNav = () => {
 						)}
 						<h4
 							contentEditable='true'
-							className='text-greyish-100 outline-none border-none whitespace-nowrap overflow-hidden text-ellipsis pl-3'
+							className='text-greyish-100 outline-none border-none whitespace-nowrap overflow-hidden text-ellipsis pl-[0.3rem]'
 							id='diplayNameEditable'
 							onKeyUp={onkeyup}
 							onKeyDown={onkeydown}>
@@ -243,7 +245,7 @@ const LeftNav = () => {
 					onClick={() => setEditProfile(true)}>
 					<Avatar size='x-large' user={currentUser} />
 					<div className='w-full h-full rounded-full bg-Gray-950/70 absolute top-0 left-0 justify-center items-center hidden group-hover:flex'>
-						<BiEditAlt size={20} className='text-greyish-200' />
+							<BiSolidEdit size={20} className='text-greyish-200' />
 					</div>
 				</div>
 			)}

@@ -42,6 +42,7 @@ const Avatar = ({ size, user, onClick }) => {
         backgroundColor: user?.color,
       }}
       onClick={onClick}>
+      <span className='w-[22px] h-[22px] rounded-full border-[5px] z-30 border-Gray-800 bg-limegreen-100 absolute top-[0px] right-[0px]'></span>
       {user?.photoURL ? (
         <div>
           <Image

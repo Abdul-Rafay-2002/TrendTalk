@@ -12,7 +12,7 @@ const UsersPopup = (props) => {
             <div className='mt-5 flex flex-col grow gap-2 relative overflow-auto scrollbar'>
                 <div className='absolute w-full '>
                     {users && Object.values(users).map((user) => (
-                        <div className='flex items-center gap-4 rounded-xl p-3 mr-6 cursor-pointer hover:bg-greyish-400'>
+                        <div key={user.uid} className='flex items-center gap-4 rounded-xl p-3 mr-6 cursor-pointer hover:bg-greyish-400'>
                             <Avatar size='x-large' user={user} />
                             <div className='flex flex-col'>
                                 <h5 className='text-Gray-50 text-lg font-Poppins font-semibold'>{user.displayName}</h5>

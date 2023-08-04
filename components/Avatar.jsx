@@ -2,7 +2,6 @@ import Image from 'next/image';
 import React from 'react';
 
 const Avatar = ({ size, user, onClick }) => {
-
   //Constants for Avatar Sizes
   const s =
     size === 'small'
@@ -42,7 +41,16 @@ const Avatar = ({ size, user, onClick }) => {
         backgroundColor: user?.color,
       }}
       onClick={onClick}>
-      <span className='w-[22px] h-[22px] rounded-full border-[5px] z-30 border-Gray-800 bg-limegreen-100 absolute top-[0px] right-[0px]'></span>
+      {user?.isOnline && (
+        <>
+          {size === 'x-large' && (
+            <span className='w-[18px] h-[18px] rounded-full border-[4px] z-30 border-Gray-800 bg-limegreen-100 absolute top-[0px] right-[0px]'></span>
+          )}
+          {size === 'xx-large' && (
+            <span className='w-[22px] h-[22px] rounded-full border-[5px] z-30 border-Gray-800 bg-limegreen-100 absolute top-[0px] right-[0px]'></span>
+          )}
+        </>
+      )}
       {user?.photoURL ? (
         <div>
           <Image

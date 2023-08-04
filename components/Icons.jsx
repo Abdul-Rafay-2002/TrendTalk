@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Icons = ({ size, icon, onClick, className }) => {
-	//Constant of icon sizes utilizaing tailwind css
+	//Constant of icon sizes utilizing tailwind css
 	const c =
 		size === 'small'
 			? 'w-8 h-8'

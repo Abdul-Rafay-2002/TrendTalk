@@ -14,10 +14,13 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { updateProfile } from 'firebase/auth';
 import { db, auth, storage, } from '@/firebase/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import UsersPopup from './popup/UsersPopup';
+
 
 const LeftNav = () => {
 	const { signOut, currentUser, setCurrentUser } = useAuth();
-	const [editProfile, setEditProfile] = useState(true);
+	const [editProfile, setEditProfile] = useState(false);
+	const [usersPopup, setUsersPopup] = useState(false);
 	const [nameEdited, setNameEdited] = useState(false);
 	const authUser = auth.currentUser;
 
@@ -39,9 +42,9 @@ const LeftNav = () => {
 		}
 	};
 	//Uploading image to firstore with the local directory of users
-	const uploadingImageToFirestore = (file) =>{
+	const uploadingImageToFirestore = (file) => {
 		try {
-			if(file){
+			if (file) {
 				// if file has uploading then this logic from FB
 				const storageRef = ref(storage, currentUser.displayName);
 				const uploadTask = uploadBytesResumable(storageRef, file);
@@ -71,9 +74,9 @@ const LeftNav = () => {
 							});
 						});
 					}
-					);
-				}
-			} catch (error) {
+				);
+			}
+		} catch (error) {
 			console.error(error);
 		}
 	}
@@ -173,7 +176,7 @@ const LeftNav = () => {
 					</div>
 					{currentUser.photoURL && (
 						<div className='w-6 h-6 rounded-full bg-Red-100 border-[5px] border-Gray-800 flex justify-center items-center absolute right-1 bottom-1'
-							onClick={() => { updateProfileHandler("photo-remove")}}
+							onClick={() => { updateProfileHandler("photo-remove") }}
 						>
 							<MdDelete size={12} color='#fff' />
 						</div>
@@ -228,13 +231,9 @@ const LeftNav = () => {
 
 	return (
 		<div
-			className={`${
-				editProfile ? 'w-[300px]' : 'w-[80px] items-center'
-			} h-[100vh] flex flex-col justify-between py-4 shrink-0 transition-all`}>
+			className={`${editProfile ? 'w-[20rem]' : 'w-[80px] items-center'
+				} h-[100vh] flex flex-col justify-between py-4 shrink-0 transition-all`}>
 			{/* Top Header */}
-			{/* <div className='w-full text-center'>
-                <Image src="/logo.png" width={80} height={80} alt='logo' />
-            </div> */}
 
 			{/* Avatar Column */}
 			{editProfile ? (
@@ -245,20 +244,19 @@ const LeftNav = () => {
 					onClick={() => setEditProfile(true)}>
 					<Avatar size='x-large' user={currentUser} />
 					<div className='w-full h-full rounded-full bg-Gray-950/70 absolute top-0 left-0 justify-center items-center hidden group-hover:flex'>
-							<BiSolidEdit size={20} className='text-greyish-200' />
+						<BiSolidEdit size={20} className='text-greyish-200' />
 					</div>
 				</div>
 			)}
 			{/* Bottom icons */}
 			<div
-				className={`flex gap-5 justify-center  ${
-					editProfile ? '' : 'flex-col items-center'
-				}`}>
+				className={`flex gap-5 justify-center  ${editProfile ? '' : 'flex-col items-center'
+					}`}>
 				<Icons
 					size='large'
 					className={`bg-greyish-600 hover:bg-Sky-500`}
 					icon={<FaPlus size={20} color='#fff' />}
-					onClick={() => {}}
+					onClick={() => setUsersPopup(!usersPopup)}
 				/>
 				<Icons
 					size='large'
@@ -267,6 +265,7 @@ const LeftNav = () => {
 					onClick={signOut}
 				/>
 			</div>
+			{usersPopup && <UsersPopup onHide={() => setUsersPopup(false)} title='Find Users' />}
 		</div>
 	);
 };

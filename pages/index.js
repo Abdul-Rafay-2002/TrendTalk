@@ -3,6 +3,7 @@ import { useAuth } from '@/context/authContext';
 import { useRouter } from 'next/router';
 import Loader from '@/components/Loader';
 import LeftNav from '@/components/LeftNav';
+import Chats from '@/components/Chats';
 
 const Home = () => {
   const router = useRouter();
@@ -25,7 +26,9 @@ const Home = () => {
         {/* Chats main column */}
         <div className='flex bg-Gray-950 grow'>
           {/* sidebar */}
-          <div>Sidebar Section</div>
+          <div className='w-[400px] p-5 overflow-auto shrink-0 scrollbar border-greyish-300/25'>
+              <div className='flex flex-col h-full'><Chats/></div>
+          </div>
           <div>Chat Section</div>
         </div>
       </div>

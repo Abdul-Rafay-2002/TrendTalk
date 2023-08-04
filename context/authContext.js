@@ -18,6 +18,7 @@ export const UserProvider = ({ children }) => {
     // Its a clear mehtod to reset the state
     const clear = async () => {
         try {
+            //Check if currentUser isNotOnline then the condition will false
             if (currentUser) {
                 await updateDoc(doc(db, "users", currentUser.uid), {
                     isOnline: false,
@@ -37,7 +38,7 @@ export const UserProvider = ({ children }) => {
             clear();
             return;
         }
-        // get all the data from Firestore DB using getDoc() method
+        // Check if user isExists then get the isOnline is True!.
         const userDocExsist = await getDoc(doc(db, "users", user.uid));
         if (userDocExsist.exists()) {
             await updateDoc(doc(db, "users", user.uid), {
@@ -49,7 +50,6 @@ export const UserProvider = ({ children }) => {
         const userDoc = await getDoc(doc(db, "users", user.uid), {
 
         })
-
         setCurrentUser(userDoc.data());
         setIsLoading(false);
     }

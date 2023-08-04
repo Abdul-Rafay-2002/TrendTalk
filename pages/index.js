@@ -30,7 +30,7 @@ const Home = () => {
               <div className='flex flex-col h-full'><Chats/></div>
           </div>
           <div>Chat Section</div>
-        </div>
+        </div>  
       </div>
     </div>
   )

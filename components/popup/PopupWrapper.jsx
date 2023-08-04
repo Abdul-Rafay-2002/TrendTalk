@@ -13,7 +13,7 @@ const PopupWrapper = (props) => {
                 }`}
         >
             {!props.noHeader && (
-                <div className="shrink-0 p-6 flex items-center justify-between">
+                <div className="shrink-0 p-6 flex items-center justify-between border-b-4 border-greyish-300">
                     <h4 className="text-Gray-50 font-medium">
                         {props.title || ""}
                     </h4>
@@ -24,7 +24,7 @@ const PopupWrapper = (props) => {
                     />
                 </div>
             )}
-            <div className="grow flex flex-col p-6 pt-0">
+            <div className="grow flex flex-col p-6 pr-0 pt-0">
                 {props.children}
             </div>
         </div>

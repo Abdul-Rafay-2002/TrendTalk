@@ -5,6 +5,7 @@ import { useChatContext } from '@/context/chatContext';
 import Avatar from '../Avatar';
 import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebase/firebase';
+import Search from '../Search';
 
 const UsersPopup = (props) => {
     const { currentUser } = useAuth();
@@ -65,13 +66,14 @@ const UsersPopup = (props) => {
     };
     return (
         <PopupWrapper {...props}>
+            <Search/>
             <div className='mt-5 flex flex-col grow gap-2 relative overflow-auto scrollbar'>
                 <div className='absolute w-full '>
                     {users &&
                         Object.values(users).map((user) => (
                             <div
                                 key={user.uid}
-                                className='flex items-center gap-4 rounded-xl p-3 mr-6 cursor-pointer hover:bg-greyish-400'
+                                className='flex items-center gap-4 rounded-xl p-3 mx-4 cursor-pointer hover:bg-greyish-400'
                                 onClick={() => handleSelect(user)}>
                                 <Avatar size='x-large' user={user} />
                                 <div className='flex flex-col'>

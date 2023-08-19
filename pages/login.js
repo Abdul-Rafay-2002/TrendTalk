@@ -105,16 +105,16 @@ const Login = () => {
 					<div className='flex items-center flex-col sm:flex-row gap-2 w-full mt-8 mb-5'>
 						<div
 							onClick={signInWithGoogle}
-							className='bg-gradient-to-r from-limegreen-200 to-limegreen-400 w-full md:w-1/2 h-14 rounded-md cursor-pointer p-[2px] hover:from-limegreen-400 hover:to-limegreen-200'>
-							<div className='flex items-center justify-center gap-3 text-greyish-100 font-semibold bg-limegreen-500 w-full h-full rounded-md'>
+							className='bg-gradient-to-r from-Sky-200 to-Sky-600 w-full md:w-1/2 h-14 rounded-md cursor-pointer p-[2px] hover:from-Sky-600 hover:to-blue-200'>
+							<div className='flex items-center justify-center gap-3 text-greyish-100 font-semibold bg-blue-700 w-full h-full rounded-md'>
 								<FcGoogle />
 								<span>Login with Google</span>
 							</div>
 						</div>
 						<div
 							onClick={signInWithFacebook}
-							className='bg-gradient-to-r from-limegreen-200 to-limegreen-400 w-full md:w-1/2 h-14 rounded-md cursor-pointer p-[2px] hover:from-limegreen-400 hover:to-limegreen-200'>
-							<div className='flex items-center justify-center gap-3 text-greyish-100 font-semibold bg-limegreen-500 w-full h-full rounded-md'>
+								className='bg-gradient-to-r to-Sky-200 from-Sky-600 w-full md:w-1/2 h-14 rounded-md cursor-pointer p-[2px] hover:from-Sky-600 hover:to-blue-200'>
+								<div className='flex items-center justify-center gap-3 text-greyish-100 font-semibold bg-blue-700 w-full h-full rounded-md'>
 								<FaFacebookF color='#4267B2' />
 								<span>Login with Facebook</span>
 							</div>
@@ -149,7 +149,7 @@ const Login = () => {
 						</div>
 						<button
 							type='submit'
-							className='w-full h-14 rounded-md outline-none boder-none bg-gradient-to-r from-limegreen-200 to-limegreen-500 hover:bg-gradient-to-r hover:to-limegreen-500 hover:from-limegreen-400 text-greyish-100 font-semibold  mb-4'>
+								className='w-full h-14 rounded-md outline-none boder-none bg-gradient-to-r to-Sky-600 from-blue-600 hover:bg-gradient-to-r hover:to-Sky-500 hover:from-blue-700 text-greyish-100 font-semibold  mb-4'>
 							Login to your Account
 						</button>
 					</form>

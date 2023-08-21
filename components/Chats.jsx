@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useChatContext } from '@/context/chatContext';
 import { Timestamp, collection, doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/firebase/firebase';
@@ -16,10 +16,15 @@ const Chats = () => {
 		chats,
 		setChats,
 		dispatch,
-	} = useChatContext();
+	} = useChatContext(); //import from ./chatContext
 	const [search, setSearch] = useState('');
-	const { currentUser } = useAuth();
+	const { currentUser } = useAuth(); // import from ./authContext
 
+	//Creating Local variables using useRef Hook
+	const isBlockedExecutedRef = useRef(false);
+	const isUsersFetchedRef = useRef(false);
+
+	// Realtime Update User on find Search using snapshot for firebase
 	useEffect(() => {
 		onSnapshot(collection(db, 'users'), (snapshot) => {
 			const updatedUsers = {};
@@ -27,25 +32,59 @@ const Chats = () => {
 				updatedUsers[doc.id] = doc.data();
 			});
 			setUsers(updatedUsers);
+
+			//Check the current selected chat is active on reload using useRef Hook there is .current is useRef inital value to check the current state is active or not.
+			if (!isBlockedExecutedRef.current) {
+				isUsersFetchedRef.current = true;
+			}
 		});
 	}, []);
+
+	//Get realtime selected chat using useeffect and snapshot for firebase
 	useEffect(() => {
 		const getChats = () => {
 			const unsub = onSnapshot(doc(db, 'userChats', currentUser.uid), (doc) => {
 				if (doc.exists()) {
 					const data = doc.data();
 					setChats(data);
+
+					if (!isBlockedExecutedRef.current && isUsersFetchedRef.current && users) {
+						const firstChat = Object.values(data).sort((a, b) => {
+							return b.date - a.date;
+						})[0];
+						if (firstChat) {
+							const user = users[firstChat?.userInfo?.uid];
+							handleSelect(user);
+						}
+						isBlockedExecutedRef.current = true;
+					}
 				}
 			});
 		};
 		currentUser.uid && getChats();
-	}, []);
-	const filterChats = Object.entries(chats || {}).sort(
-		(a, b) => b[1].date - a[1].date
-	);
+	}, [isBlockedExecutedRef.current, users]);
+
+	//Filter chats in object to an array
+	const filterChats = Object.entries(chats || {})
+		.filter(
+			// Search filter through related kewords of exisiting chats
+			([, chat]) =>
+				chat?.userInfo?.displayName
+					.toLowerCase()
+					.includes(search.toLocaleLowerCase()) ||
+				// Search filter through related kewords of exisiting chats message
+				chat?.lastMessage?.text
+					.toLowerCase()
+					.includes(search.toLocaleLowerCase())
+
+			//Sort Date/Time in readable formate
+		)
+		.sort((a, b) => b[1].date - a[1].date);
+
+	//this function is to select a clicked user
 	const handleSelect = (user, selectedChatId) => {
 		setSelectedChat(user);
-		dispatch({ type: "CHANGE_USER", payload: user });
+		dispatch({ type: 'CHANGE_USER', payload: user });
 
 		// if (unreadMsgs?.[selectedChatId]?.length > 0) {
 		// 	readChat(selectedChatId);
@@ -80,9 +119,10 @@ const Chats = () => {
 							<li
 								key={chat[0]}
 								onClick={() => handleSelect(user, chat[0])}
-								className={`h-[90px] flex items-center gap-4 rounded-xl relative hover:bg-blue-500 p-4 cursor-pointer ${
-									selectedChat?.uid === user.uid ? 'bg-blue-600' : ''
-								}`}>
+								className={`h-[90px] flex items-center gap-4 rounded-xl relative hover:bg-blue-500 p-4 cursor-pointer ${selectedChat?.uid === user.uid
+									? 'bg-blue-600 border-2 border-blue-400'
+									: ''
+									}`}>
 								<div className='text-greyish-200 text-xs font-semibold font-Roboto absolute right-4 top-2'>
 									{formatDate(date)}
 								</div>
@@ -91,7 +131,9 @@ const Chats = () => {
 								</div>
 								<div className='flex flex-col gap-0 grow relative'>
 									<span className='flex items-center justify-between'>
-										<h6 className='text-greyish-100'>{user?.displayName}</h6>
+										<h6 className='text-greyish-100 font-Poppins'>
+											{user?.displayName}
+										</h6>
 									</span>
 									<p className='text-sm max-w-[200px] text-greyish-200/60 font-Lexend line-clamp-1 break-all'>
 										{chat[1]?.lastMessage?.text ||

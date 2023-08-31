@@ -4,10 +4,13 @@ import { useRouter } from 'next/router';
 import Loader from '@/components/Loader';
 import LeftNav from '@/components/LeftNav';
 import Chats from '@/components/Chats';
+import Chat from '@/components/Chat';
+import { useChatContext } from '@/context/chatContext';
 
 const Home = () => {
 	const router = useRouter();
 	const { currentUser, isLoading } = useAuth();
+	const { data } = useChatContext(); //from chat context
 	useEffect(() => {
 		if (!isLoading && !currentUser) {
 			// it means user login
@@ -30,7 +33,7 @@ const Home = () => {
 							<Chats />
 						</div>
 					</div>
-					<div>Chat Section</div>
+					{data.user && <Chat />}
 				</div>
 			</div>
 		</div>

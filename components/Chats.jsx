@@ -40,7 +40,7 @@ const Chats = () => {
 		});
 	}, []);
 
-	//Get realtime selected chat using useeffect and snapshot for firebase
+	//Get realtime selected chat using useEffect and snapshot for firebase
 	useEffect(() => {
 		const getChats = () => {
 			const unsub = onSnapshot(doc(db, 'userChats', currentUser.uid), (doc) => {

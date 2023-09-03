@@ -44,13 +44,13 @@ const Avatar = ({ size, user, onClick }) => {
       {user?.isOnline && (
         <>
           {size === 'large' && (
-            <span className='w-[14px] h-[14px] rounded-full border-[3px] z-30 border-Gray-800 bg-limegreen-100 absolute top-[0px] right-[0px]'></span>
+            <span className='w-[14px] h-[14px] rounded-full border-[3px] z-2 border-Gray-800 bg-limegreen-100 absolute top-[0px] right-[0px]'></span>
           )}
           {size === 'x-large' && (
-            <span className='w-[18px] h-[18px] rounded-full border-[4px] z-30 border-Gray-800 bg-limegreen-100 absolute top-[0px] right-[0px]'></span>
+            <span className='w-[18px] h-[18px] rounded-full border-[4px] z-2 border-Gray-800 bg-limegreen-100 absolute top-[0px] right-[0px]'></span>
           )}
           {size === 'xx-large' && (
-            <span className='w-[22px] h-[22px] rounded-full border-[5px] z-30 border-Gray-800 bg-limegreen-100 absolute top-[0px] right-[0px]'></span>
+            <span className='w-[22px] h-[22px] rounded-full border-[5px] z-2 border-Gray-800 bg-limegreen-100 absolute top-[0px] right-[0px]'></span>
           )}
         </>
       )}

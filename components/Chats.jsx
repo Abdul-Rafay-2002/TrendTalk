@@ -92,7 +92,7 @@ const Chats = () => {
 	};
 	return (
 		<div className='flex flex-col h-full'>
-			<div className='shrink-0 sticky -top-[20px] text- z-10 flex justify-center w-full py-2'>
+			<div className='shrink-0 sticky -top-[20px] text- z-9 flex justify-center w-full py-2'>
 				<RiSearch2Line
 					size={22}
 					className='absolute top-[26px] left-2 text-Gray-100/70'

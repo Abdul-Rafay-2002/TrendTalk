@@ -85,7 +85,7 @@ const ChatFooter = () => {
 					<ClickAwayListener onClickAway={handleClickAway}>
 						<div className='absolute bottom-12 left-0 shadow-lg'>
 							<EmojiPicker
-								emojiStyle='apple'
+								emojiStyle='native'
 								theme='dark'
 								onEmojiClick={onEmojiClick}
 								autoFocusSearch={false}

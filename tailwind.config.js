@@ -9,7 +9,8 @@ module.exports = {
     fontFamily: {
       Poppins: 'Poppins, sans-serif',
       Roboto: 'Roboto, sans-serif',
-      Lexend: 'Lexend, sans-serif'
+      Lexend: 'Lexend, sans-serif',
+      Jost: 'Jost, sans-serif',
     },
     colors: {
       greyish: {

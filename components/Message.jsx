@@ -16,7 +16,7 @@ import { DELETED_FOR_EVERYONE, DELETED_FOR_ME } from '@/utils/constants';
 const Message = ({ message }) => {
     const { currentUser } = useAuth();
     const [showDeletePopup, setShowDeletePopup] = useState(false);
-    const { users, data, imageViewer, setImageViewer } = useChatContext();
+    const { users, data, imageViewer, setImageViewer, setEditMsg } = useChatContext();
     const [showMenu, setShowMenu] = useState(false);
     const self = message.sender === currentUser.uid;
     const timestamp = new Timestamp(
@@ -133,6 +133,7 @@ const Message = ({ message }) => {
                                 setShowMenu={setShowMenu}
                                 showMenu={showMenu}
                                 deletePopupHandler={deletePopupHandler}
+                                setEditMsg={() => setEditMsg(message)}
                             />
                         )}
                     </div>

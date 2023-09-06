@@ -12,6 +12,7 @@ const ChatFooter = () => {
 	const handleClickAway = () => {
 		setUseEmojiPicker(false);
 	};
+
 	const [useEmojiPicker, setUseEmojiPicker] = useState(false);
 	const {
 		isTyping,
@@ -22,6 +23,7 @@ const ChatFooter = () => {
 		setAttachment,
 		attachmentPreview,
 		setAttachmentPreview,
+		data
 	} = useChatContext();
 	const onEmojiClick = (emojiData) => {
 		let text = inputText;
@@ -98,7 +100,7 @@ const ChatFooter = () => {
 			{isTyping && (
 				<div className='absolute -top-6 left-4 bg-greyish-600 w-full h-6'>
 					<div className='flex gap-2 w-full h-full opacity-50 text-sm text-greyish-100'>
-						{`User is Typing`}
+						{`${data?.user?.displayName} is Typing`}
 						<img src='/typing.svg' className='text' />
 					</div>
 				</div>

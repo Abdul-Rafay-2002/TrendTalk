@@ -13,7 +13,6 @@ import DeleteMessagePopup from './popup/DeleteMessagePopup';
 import { db } from '@/firebase/firebase';
 import { DELETED_FOR_EVERYONE, DELETED_FOR_ME } from '@/utils/constants';
 
-
 const Message = ({ message }) => {
     const { currentUser } = useAuth();
     const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -35,30 +34,30 @@ const Message = ({ message }) => {
             const messageId = message.id;
             const chatRef = doc(db, 'chats', data.chatId);
             const chatDoc = await getDoc(chatRef);
-
             const updatedMessages = chatDoc.data().messages.map((message) => {
                 if (message.id === messageId) {
                     if (action === DELETED_FOR_ME) {
                         message.deletedInfo = {
-                            [currentUser.uid]: DELETED_FOR_ME
-                        }
+                            [currentUser.uid]: DELETED_FOR_ME,
+                        };
                     }
                     if (action === DELETED_FOR_EVERYONE) {
                         message.deletedInfo = {
-                            deletedForEveryone: true
-                        }
+                            deletedForEveryone: true,
+                        };
                     }
                 }
                 return message;
             });
 
             await updateDoc(chatRef, {
-                messages: updatedMessages
-            })
+                messages: updatedMessages,
+            });
+            setShowDeletePopup(false);
         } catch (error) {
-            console.error(error)
+            console.error(error);
         }
-    }
+    };
 
     return (
         <div className={`mb-5 mx-w-[75%] ${self ? 'self-end' : ''}`}>

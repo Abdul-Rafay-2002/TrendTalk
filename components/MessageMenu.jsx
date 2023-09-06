@@ -15,15 +15,21 @@ const MessageMenu = ({ showMenu, setShowMenu, self, deletePopupHandler }) => {
 			<div>
 				<div
 					ref={ref}
-					className={`w-[150px] absolute bg-Gray-800 rounded-md overflow-hidden z-10 top-8 ${self ? 'right-0' : 'left-0'
-						}`}>
+					className={`w-[150px] absolute bg-Gray-800 rounded-md overflow-hidden z-10 top-8 ${
+						self ? 'right-0' : 'left-0'
+					}`}>
 					<ul className='p-2 flex flex-col text-greyish-100/80 '>
 						{self && (
 							<li className='flex items-center py-2 px-3 cursor-pointer text-sm rounded-md hover:bg-blue-500 hover:text-greyish-100 font-semibold'>
 								Edit Message
 							</li>
 						)}
-						<li className='flex items-center py-2 px-3 cursor-pointer text-sm rounded-md hover:bg-blue-500 hover:text-greyish-100 font-semibold' onClick={() => { deletePopupHandler(true) }}>
+						<li
+							className='flex items-center py-2 px-3 cursor-pointer text-sm rounded-md hover:bg-blue-500 hover:text-greyish-100 font-semibold'
+							onClick={(e) => {
+								e.stopPropagation();
+								deletePopupHandler(true);
+							}}>
 							Delete Message
 						</li>
 					</ul>

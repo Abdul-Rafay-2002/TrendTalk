@@ -23,11 +23,12 @@ const Messages = () => {
 				setMessages(doc.data().messages);
 			}
 
+      //Set time out-to-scroll 
 			setTimeout(() => {
 				scrollToBottom();
 			}, 0);
 		});
-    
+
 		return () => unsub();
 	}, [data.chatId]);
 

@@ -1,6 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useChatContext } from '@/context/chatContext';
-import { Timestamp, collection, doc, onSnapshot } from 'firebase/firestore';
+import {
+	Timestamp,
+	collection,
+	doc,
+	getDoc,
+	onSnapshot,
+	query,
+	updateDoc,
+	where,
+} from 'firebase/firestore';
 import { db } from '@/firebase/firebase';
 import { RiSearch2Line } from 'react-icons/ri';
 import Avatar from './Avatar';
@@ -16,14 +25,22 @@ const Chats = () => {
 		chats,
 		setChats,
 		dispatch,
+		resetFooterStates,
+		data
 	} = useChatContext(); //import from ./chatContext
 	const [search, setSearch] = useState('');
 	const { currentUser } = useAuth(); // import from ./authContext
+	const [unreadMessages, setUnreadMessages] = useState({});
 
 	//Creating Local variables using useRef Hook
 	const isBlockedExecutedRef = useRef(false);
 	const isUsersFetchedRef = useRef(false);
 
+	//Reset All the states while envoking the new chats
+	useEffect(() => {
+		resetFooterStates();
+	}, [data.chatId])
+	
 	// Realtime Update User on find Search using snapshot for firebase
 	useEffect(() => {
 		onSnapshot(collection(db, 'users'), (snapshot) => {
@@ -39,6 +56,33 @@ const Chats = () => {
 			}
 		});
 	}, []);
+	//RealTime Updated Message badges
+	useEffect(() => {
+		const docIds = Object.keys(chats);
+		if (docIds.length === 0) return;
+		const q = query(collection(db, 'chats'), where('__name__', 'in', docIds));
+		const unsub = onSnapshot(q, (snapshot) => {
+			let msgs = {};
+			snapshot.forEach((doc) => {
+				if (doc.id !== data.chatId) {
+					msgs[doc.id] = doc
+						.data()
+						.messages?.filter(
+							(m) =>
+								m?.read === false &&
+								m?.sender !== currentUser.uid
+						);
+				}
+				Object.keys(msgs || {})?.map((c => {
+					if (msgs[c]?.length < 1) {
+						delete msgs[c]
+					}
+				}))
+			});
+			setUnreadMessages(msgs)
+		});
+		return () => unsub();
+	}, [chats, selectedChat]);
 
 	//Get realtime selected chat using useEffect and snapshot for firebase
 	useEffect(() => {
@@ -48,7 +92,11 @@ const Chats = () => {
 					const data = doc.data();
 					setChats(data);
 
-					if (!isBlockedExecutedRef.current && isUsersFetchedRef.current && users) {
+					if (
+						!isBlockedExecutedRef.current &&
+						isUsersFetchedRef.current &&
+						users
+					) {
 						const firstChat = Object.values(data).sort((a, b) => {
 							return b.date - a.date;
 						})[0];
@@ -81,14 +129,30 @@ const Chats = () => {
 		)
 		.sort((a, b) => b[1].date - a[1].date);
 
+	const readChats = async (chatId) => {
+		const chatRef = doc(db, "chats", chatId);
+		const chatDoc = await getDoc(chatRef);
+
+		let updatedMessages = chatDoc?.data()?.messages?.map(m => {
+			if (m?.read === false) {
+				m.read = true;
+			}
+			return m;
+		})
+
+		await updateDoc(chatRef, {
+			messages: updatedMessages
+		})
+	}
+
 	//this function is to select a clicked user
 	const handleSelect = (user, selectedChatId) => {
 		setSelectedChat(user);
 		dispatch({ type: 'CHANGE_USER', payload: user });
 
-		// if (unreadMsgs?.[selectedChatId]?.length > 0) {
-		// 	readChat(selectedChatId);
-		// }
+		if (unreadMessages?.[selectedChatId]?.length > 0) {
+			readChats(selectedChatId);
+		}
 	};
 	return (
 		<div className='flex flex-col h-full'>
@@ -140,9 +204,9 @@ const Chats = () => {
 											(chat[1]?.lastMessage?.img && 'image') ||
 											'Send first message'}
 									</p>
-									<div className='absolute bottom-1 right-0 text-greyish-200 p-1 bg-Red-100 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-semibold'>
-										5
-									</div>
+									{!!unreadMessages?.[chat[0]]?.length && (<div className='absolute bottom-1 right-0 text-greyish-200 p-1 bg-Red-100 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-semibold'>
+										{unreadMessages?.[chat[0]]?.length}
+									</div>)}
 								</div>
 							</li>
 						);

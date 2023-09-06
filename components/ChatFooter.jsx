@@ -98,8 +98,8 @@ const ChatFooter = () => {
 				)}
 			</div>
 			{isTyping && (
-				<div className='absolute -top-6 left-4 bg-greyish-600 w-full h-6'>
-					<div className='flex gap-2 w-full h-full opacity-50 text-sm text-greyish-100'>
+				<div className='absolute -top-7 left-4 bg-greyish-600 w-full h-6'>
+					<div className='flex gap-2 w-full h-full opacity-60 text-sm text-greyish-100 Lexend tracking-widest'>
 						{`${data?.user?.displayName} is Typing`}
 						<img src='/typing.svg' className='text' />
 					</div>

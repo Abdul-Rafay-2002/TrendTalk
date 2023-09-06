@@ -35,7 +35,7 @@ const Composebar = () => {
 		});
 
     if(typingTimeout){
-      clearInterval(typingTimeout);
+      clearTimeout(typingTimeout);
     };
   
 		typingTimeout = setTimeout(async () => {

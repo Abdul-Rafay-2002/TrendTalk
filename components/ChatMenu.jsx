@@ -12,12 +12,12 @@ const ChatMenu = ({ showMenu, setShowMenu }) => {
 		setShowMenu(false);
 	};
 
-    //when the user is block
+	//when the user is block
 	const isUserBlocked = users[currentUser.uid]?.blockedUsers?.find(
-        (u) => u === data.user.uid
-        );
+		(u) => u === data.user.uid
+	);
 
-    //when the currentUser is block
+	//when the currentUser is block
 	const iamBlocked = users[data.user.uid]?.blockedUsers?.find(
 		(u) => u === currentUser.uid
 	);
@@ -38,16 +38,16 @@ const ChatMenu = ({ showMenu, setShowMenu }) => {
 			<div className='arrow'>
 				<div className='w-[180px] absolute top-[55px] right-0 bg-greyish-500 rounded-md overflow-hidden z-20'>
 					<ul className='p-2 flex flex-col text-greyish-100/80 '>
-						<li
-							className='flex items-center py-2 px-3 cursor-pointer text-sm rounded-md hover:bg-greyish-400 hover:text-greyish-100 font-semibold
-                    
-                    '
-							onClick={(e) => {
-								e.stopPropagation();
-								handleBlock('block');
-							}}>
-							Block User
-						</li>
+						{!iamBlocked && (
+							<li
+								className='flex items-center py-2 px-3 cursor-pointer text-sm rounded-md hover:bg-greyish-400 hover:text-greyish-100 font-semibold'
+								onClick={(e) => {
+									e.stopPropagation();
+									handleBlock(isUserBlocked ? 'unblock' : 'block' );
+								}}>
+								{isUserBlocked ? 'Unblock User' : 'Block User'}
+							</li>
+						)}
 						<li className='flex items-center py-2 px-3 cursor-pointer text-sm rounded-md hover:bg-greyish-400 hover:text-greyish-100 font-semibold'>
 							Delete Chat
 						</li>

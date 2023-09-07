@@ -36,7 +36,7 @@ const Chats = () => {
 	const isBlockedExecutedRef = useRef(false);
 	const isUsersFetchedRef = useRef(false);
 
-	//Reset All the states while envoking the new chats
+	//Reset All the states while envoking the new chat
 	useEffect(() => {
 		resetFooterStates();
 	}, [data.chatId])

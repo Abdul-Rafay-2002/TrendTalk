@@ -3,7 +3,14 @@ import PopupWrapper from './PopupWrapper';
 import { useAuth } from '@/context/authContext';
 import { useChatContext } from '@/context/chatContext';
 import Avatar from '../Avatar';
-import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
+import {
+    deleteField,
+    doc,
+    getDoc,
+    serverTimestamp,
+    setDoc,
+    updateDoc,
+} from 'firebase/firestore';
 import { db } from '@/firebase/firebase';
 import Search from '../Search';
 
@@ -31,34 +38,36 @@ const UsersPopup = (props) => {
                     // Create new chat document for current user
                     await setDoc(doc(db, 'userChats', currentUser.uid), {});
                 }
-                await updateDoc(doc(db, "userChats", currentUser.uid), {
-                    [combinedId + ".userInfo"]: {
+                await updateDoc(doc(db, 'userChats', currentUser.uid), {
+                    [combinedId + '.userInfo']: {
                         uid: user.uid,
                         displayName: user.displayName,
                         photoURL: user.photoURL || null,
-                        color: user.color
+                        color: user.color,
                     },
-                    [combinedId + ".data"]: serverTimestamp()
+                    [combinedId + '.data']: serverTimestamp(),
                 });
                 if (!UserChatRef.exists()) {
                     // Create new chat document for user
                     await setDoc(doc(db, 'userChats', user.uid), {});
                 }
-                await updateDoc(doc(db, "userChats", user.uid), {
-                    [combinedId + ".userInfo"]: {
+                await updateDoc(doc(db, 'userChats', user.uid), {
+                    [combinedId + '.userInfo']: {
                         uid: currentUser.uid,
                         displayName: currentUser.displayName,
                         photoURL: currentUser.photoURL || null,
-                        color: currentUser.color
+                        color: currentUser.color,
                     },
-                    [combinedId + ".data"]: serverTimestamp(),
+                    [combinedId + '.data']: serverTimestamp(),
+                });
+            } else {
+                // Chat Document Exsist
+                await updateDoc(doc(db, 'userChats', currentUser.uid), {
+                    [combinedId + '.chatDeleted']: deleteField(),
                 });
             }
-            else {
-                // Chat Document Exsist
-            }
 
-            dispatch({ type: 'CHANGE_USER', payload: user })
+            dispatch({ type: 'CHANGE_USER', payload: user });
             props.onHide();
         } catch (error) {
             console.error(error);
@@ -66,7 +75,7 @@ const UsersPopup = (props) => {
     };
     return (
         <PopupWrapper {...props}>
-            <Search/>
+            <Search />
             <div className='mt-5 flex flex-col grow gap-2 relative overflow-auto scrollbar'>
                 <div className='absolute w-full '>
                     {users &&

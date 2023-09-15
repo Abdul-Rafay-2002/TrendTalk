@@ -21,7 +21,7 @@ export const ChatContextProivder = ({ children }) => {
 		setAttachmentPreview(null);
 		setEditMsg(null);
 		setImageViewer(null);
-	}
+	};
 
 	const INITIAL_STATE = {
 		chatId: '',
@@ -37,7 +37,9 @@ export const ChatContextProivder = ({ children }) => {
 							? currentUser.uid + action.payload.uid
 							: action.payload.uid + currentUser.uid,
 				};
-
+			case 'EMPTY':
+				return INITIAL_STATE;
+				
 			default:
 				return state;
 		}
@@ -67,7 +69,7 @@ export const ChatContextProivder = ({ children }) => {
 				setIsTyping,
 				imageViewer,
 				setImageViewer,
-				resetFooterStates
+				resetFooterStates,
 			}}>
 			{children}
 		</chatContext.Provider>

@@ -1,5 +1,5 @@
 import { db } from '@/firebase/firebase';
-import { collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
+import { collection, deleteField, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
 import React, { useState } from 'react';
 import { RiSearch2Line } from 'react-icons/ri';
 import { LuAlertTriangle } from "react-icons/lu";
@@ -81,6 +81,9 @@ const Search = () => {
 			}
 			else {
 				// Chat Document Exsist
+				await updateDoc(doc(db, "userChats", currentUser.uid), {
+					[combinedId + '.chatDeleted']: deleteField(),
+				})
 			}
 			setUser(null);
 			setUsername('');

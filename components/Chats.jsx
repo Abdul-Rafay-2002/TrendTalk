@@ -26,7 +26,7 @@ const Chats = () => {
 		setChats,
 		dispatch,
 		resetFooterStates,
-		data
+		data,
 	} = useChatContext(); //import from ./chatContext
 	const [search, setSearch] = useState('');
 	const { currentUser } = useAuth(); // import from ./authContext
@@ -36,14 +36,9 @@ const Chats = () => {
 	const isBlockedExecutedRef = useRef(false);
 	const isUsersFetchedRef = useRef(false);
 
-	//Reset All the states while envoking the new chat
-	useEffect(() => {
-		resetFooterStates();
-	}, [data.chatId])
-	
 	// Realtime Update User on find Search using snapshot for firebase
 	useEffect(() => {
-		onSnapshot(collection(db, 'users'), (snapshot) => {
+		const unsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
 			const updatedUsers = {};
 			snapshot.forEach((doc) => {
 				updatedUsers[doc.id] = doc.data();
@@ -55,6 +50,7 @@ const Chats = () => {
 				isUsersFetchedRef.current = true;
 			}
 		});
+		return unsubscribe;
 	}, []);
 	//RealTime Updated Message badges
 	useEffect(() => {
@@ -68,20 +64,19 @@ const Chats = () => {
 					msgs[doc.id] = doc
 						.data()
 						.messages?.filter(
-							(m) =>
-								m?.read === false &&
-								m?.sender !== currentUser.uid
+							(m) => m?.read === false && m?.sender !== currentUser.uid
 						);
 				}
-				Object.keys(msgs || {})?.map((c => {
+				Object.keys(msgs || {})?.map((c) => {
 					if (msgs[c]?.length < 1) {
-						delete msgs[c]
+						delete msgs[c];
 					}
-				}))
+				});
 			});
-			setUnreadMessages(msgs)
+			setUnreadMessages(msgs);
+			console.log('$$$$$$$$$$', msgs);
 		});
-		return () => unsub();
+		return unsub;
 	}, [chats, selectedChat]);
 
 	//Get realtime selected chat using useEffect and snapshot for firebase
@@ -92,58 +87,67 @@ const Chats = () => {
 					const data = doc.data();
 					setChats(data);
 
+					if (data.hasOwnProperty('isTyping')) delete data.isTyping;
 					if (
-						!isBlockedExecutedRef.current &&
 						isUsersFetchedRef.current &&
+						!isBlockedExecutedRef.current &&
 						users
 					) {
-						const firstChat = Object.values(data).sort((a, b) => {
-							return b.date - a.date;
-						})[0];
+						const firstChat = Object.values(data)
+							.filter((chat) => !chat?.hasOwnProperty('chatDeleted'))
+							.sort((a, b) => {
+								return b.date - a.date;
+							})[0];
 						if (firstChat) {
 							const user = users[firstChat?.userInfo?.uid];
+							const chatId =
+								currentUser.uid > user.uid
+									? currentUser.uid + user.uid
+									: user.uid + currentUser.uid;
+
 							handleSelect(user);
+							readChats(chatId);
 						}
 						isBlockedExecutedRef.current = true;
 					}
 				}
 			});
+			return () => unsub();
 		};
 		currentUser.uid && getChats();
 	}, [isBlockedExecutedRef.current, users]);
 
+	//Reset All the states while envoking the new chat
+	useEffect(() => {
+		resetFooterStates();
+	}, [data?.chatId]);
+
 	//Filter chats in object to an array
 	const filterChats = Object.entries(chats || {})
+		.filter(([, chat]) => !chat?.hasOwnProperty('chatDeleted'))
 		.filter(
 			// Search filter through related kewords of exisiting chats
 			([, chat]) =>
-				chat?.userInfo?.displayName
-					.toLowerCase()
-					.includes(search.toLocaleLowerCase()) ||
-				// Search filter through related kewords of exisiting chats message
-				chat?.lastMessage?.text
-					.toLowerCase()
-					.includes(search.toLocaleLowerCase())
+				chat?.userInfo?.displayName.toLowerCase().includes(search.toLowerCase())
+			// ||
+			// Search filter through related kewords of exisiting chats message
+			// chat?.lastMessage?.text.toLowerCase().includes(search.toLowerCase())
 
 			//Sort Date/Time in readable formate
 		)
 		.sort((a, b) => b[1].date - a[1].date);
 
 	const readChats = async (chatId) => {
-		const chatRef = doc(db, "chats", chatId);
+		const chatRef = doc(db, 'chats', chatId);
 		const chatDoc = await getDoc(chatRef);
-
-		let updatedMessages = chatDoc?.data()?.messages?.map(m => {
-			if (m?.read === false) {
-				m.read = true;
+		let updatedMessages = chatDoc.data()?.messages?.map((message) => {
+			if (message?.read === false) {
+				message.read = true;
 			}
-			return m;
-		})
-
-		await updateDoc(chatRef, {
-			messages: updatedMessages
-		})
-	}
+			return message;
+		});
+		await updateDoc(chatRef, { messages: updatedMessages });
+	};
 
 	//this function is to select a clicked user
 	const handleSelect = (user, selectedChatId) => {
@@ -183,10 +187,11 @@ const Chats = () => {
 							<li
 								key={chat[0]}
 								onClick={() => handleSelect(user, chat[0])}
-								className={`h-[90px] flex items-center gap-4 rounded-xl relative hover:bg-blue-500 p-4 cursor-pointer ${selectedChat?.uid === user.uid
-									? 'bg-blue-600 border-2 border-blue-400'
-									: ''
-									}`}>
+								className={`h-[90px] flex items-center gap-4 rounded-xl relative hover:bg-blue-500 p-4 cursor-pointer ${
+									selectedChat?.uid === user.uid
+										? 'bg-blue-600 border-2 border-blue-400'
+										: ''
+								}`}>
 								<div className='text-greyish-200 text-xs font-semibold font-Roboto absolute right-4 top-2'>
 									{formatDate(date)}
 								</div>
@@ -204,9 +209,11 @@ const Chats = () => {
 											(chat[1]?.lastMessage?.img && 'image') ||
 											'Send first message'}
 									</p>
-									{!!unreadMessages?.[chat[0]]?.length && (<div className='absolute bottom-1 right-0 text-greyish-200 p-1 bg-Red-100 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-semibold'>
-										{unreadMessages?.[chat[0]]?.length}
-									</div>)}
+									{!!unreadMessages?.[chat[0]]?.length && (
+										<div className='absolute bottom-1 right-0 text-greyish-200 p-1 bg-Red-100 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-semibold'>
+											{unreadMessages?.[chat[0]]?.length}
+										</div>
+									)}
 								</div>
 							</li>
 						);

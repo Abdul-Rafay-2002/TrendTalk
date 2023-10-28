@@ -2,6 +2,7 @@ import { React, useEffect, useState } from 'react';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebookF } from 'react-icons/fa';
 import Link from 'next/link';
+import { HiEye, HiEyeOff } from 'react-icons/hi'
 import { auth } from '@/firebase/firebase';
 import {
 	signInWithEmailAndPassword,
@@ -17,11 +18,18 @@ import { toast } from 'react-toastify';
 import Loader from '@/components/Loader';
 
 const Login = () => {
+	const [passwordVisible, setPasswordVisible] = useState(false);
+	const [password, setPassword] = useState('');
 	const [email, setEmail] = useState('');  // set the current user email
 	const router = useRouter(); //Router to dynamic routing
 	const { currentUser, isLoading } = useAuth();  // from context
 	const GoogleProvider = new GoogleAuthProvider(); // from FB
 	const FacebookProvider = new FacebookAuthProvider(); // from FB
+
+
+	const togglePasswordVisibility = () => {
+		setPasswordVisible(!passwordVisible);
+	};
 
 	// Check if current user is login then removed loader and redirect to the homepage.
 	useEffect(() => {
@@ -88,9 +96,9 @@ const Login = () => {
 		}
 	};
 
-// Check if the currentUser is login then not show else show 
+	// Check if the currentUser is login then not show else show 
 	return isLoading || (!isLoading && currentUser) ? (
-		<Loader/>
+		<Loader />
 	) : (
 		<div className='w-full h-full animated-bg'>
 			<ToastMessage />
@@ -113,8 +121,8 @@ const Login = () => {
 						</div>
 						<div
 							onClick={signInWithFacebook}
-								className='bg-gradient-to-r to-Sky-200 from-Sky-600 w-full md:w-1/2 h-14 rounded-md cursor-pointer p-[2px] hover:from-Sky-600 hover:to-blue-200'>
-								<div className='flex items-center justify-center gap-3 text-greyish-100 font-semibold bg-blue-700 w-full h-full rounded-md'>
+							className='bg-gradient-to-r to-Sky-200 from-Sky-600 w-full md:w-1/2 h-14 rounded-md cursor-pointer p-[2px] hover:from-Sky-600 hover:to-blue-200'>
+							<div className='flex items-center justify-center gap-3 text-greyish-100 font-semibold bg-blue-700 w-full h-full rounded-md'>
 								<FaFacebookF color='#4267B2' />
 								<span>Login with Facebook</span>
 							</div>
@@ -136,12 +144,20 @@ const Login = () => {
 							autoComplete='off'
 							onChange={(e) => setEmail(e.target.value)}
 						/>
-						<input
-							type='password'
-							placeholder='Password'
-							className='w-full h-12 rounded-md outline-none boder-none bg-greyish-400 px-4 text-greyish-100 text-md'
-							autoComplete='off'
-						/>
+						<div className='relative w-full'>
+							<input
+								type={passwordVisible ? 'text' : 'password'}
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								placeholder='Password'
+								className='w-full h-12 rounded-md outline-none boder-none bg-greyish-400 px-4 text-greyish-100 text-md'
+								autoComplete='off'
+							/>
+								<span className='absolute right-2 top-4 text-greyish-200'>
+									{passwordVisible ? <HiEyeOff size={20} onClick={togglePasswordVisibility} className='text-greyish-200/80' /> : <HiEye size={20} onClick={togglePasswordVisibility} className='text-greyish-200/40' />}
+								</span>
+
+						</div>
 						<div onClick={forgetPassword} className='text-right w-full my-2'>
 							<span className='text-greyish-200  cursor-pointer lexend'>
 								Forget Password?
@@ -149,7 +165,7 @@ const Login = () => {
 						</div>
 						<button
 							type='submit'
-								className='w-full h-14 rounded-md outline-none boder-none bg-gradient-to-r to-Sky-600 from-blue-600 hover:bg-gradient-to-r hover:to-Sky-500 hover:from-blue-700 text-greyish-100 font-semibold  mb-4'>
+							className='w-full h-14 rounded-md outline-none boder-none bg-gradient-to-r to-Sky-600 from-blue-600 hover:bg-gradient-to-r hover:to-Sky-500 hover:from-blue-700 text-greyish-100 font-semibold  mb-4'>
 							Login to your Account
 						</button>
 					</form>

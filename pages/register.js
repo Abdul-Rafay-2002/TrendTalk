@@ -1,5 +1,6 @@
 import { React, useEffect, useState } from 'react';
 import { FcGoogle } from 'react-icons/fc';
+import { HiEye, HiEyeOff } from 'react-icons/hi'
 import { FaFacebookF } from 'react-icons/fa';
 import Link from 'next/link';
 import { auth, db } from '@/firebase/firebase';
@@ -20,8 +21,14 @@ const GoogleProvider = new GoogleAuthProvider(); // from FB
 const FacebookProvider = new FacebookAuthProvider(); // from FB
 
 const Register = () => {
+	const [passwordVisible, setPasswordVisible] = useState(false);
+	const [password, setPassword] = useState('');
 	const router = useRouter(); //Router to dynamic routing
 	const { currentUser, isLoading } = useAuth(); // from context
+
+	const togglePasswordVisibility = () => {
+		setPasswordVisible(!passwordVisible);
+	};
 
 	// Check if current user is login then removed loader and redirect to the homepage.
 	useEffect(() => {
@@ -143,12 +150,20 @@ const Register = () => {
 								className='w-full h-12 rounded-md outline-none border-none bg-greyish-400 px-4 text-greyish-100 text-md'
 								autoComplete='off'
 							/>
-							<input
-								type='password'
-								placeholder='Password'
-								className='w-full h-12 rounded-md outline-none border-none bg-greyish-400 px-4 text-greyish-100 text-md'
-								autoComplete='off'
-							/>
+							<div className='relative w-full'>
+								<input
+									type={passwordVisible ? 'text' : 'password'}
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+									placeholder='Password'
+									className='w-full h-12 rounded-md outline-none boder-none bg-greyish-400 px-4 text-greyish-100 text-md'
+									autoComplete='off'
+								/>
+								<span className='absolute right-2 top-4 text-greyish-200'>
+									{passwordVisible ? <HiEyeOff size={20} onClick={togglePasswordVisibility} className='text-greyish-200/80' /> : <HiEye size={20} onClick={togglePasswordVisibility} className='text-greyish-200/40' />}
+								</span>
+
+							</div>
 
 							<button
 								type='submit'

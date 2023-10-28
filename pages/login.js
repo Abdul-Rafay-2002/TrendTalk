@@ -158,7 +158,7 @@ const Login = () => {
 								</span>
 
 						</div>
-						<div onClick={forgetPassword} className='text-right w-full my-2'>
+						<div onClick={forgetPassword} className='text-right mt-auto ml-auto my-2'>
 							<span className='text-greyish-200  cursor-pointer lexend'>
 								Forget Password?
 							</span>

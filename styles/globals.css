@@ -87,7 +87,9 @@ a.button,
 button {
   border-radius: 10px;
 }
-
+#ReactSimpleImageViewer{
+  z-index: 111;
+}
 @media screen and (max-width: 1080px) {
   h1 {
     font: var(--H1-lg);
